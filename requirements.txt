@@ -1,7 +1,10 @@
+APScheduler==3.5.3
 certifi==2018.10.15
 chardet==3.0.4
 idna==2.7
 pyTelegramBotAPI==3.6.6
+pytz==2018.7
 requests==2.20.1
 six==1.11.0
+tzlocal==1.5.1
 urllib3==1.24.1
