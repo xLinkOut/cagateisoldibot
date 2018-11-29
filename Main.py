@@ -2,6 +2,11 @@
 import telebot, logging, os
 import Settings, Statements, Keyboards
 
+from time import strftime as current_date
+from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 # Check for database file
 if not (os.path.isfile(Settings.DatabaseFile)):
     print('Database not found!')
@@ -17,6 +22,38 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)
 # Create bot obj with token in settings file
 bot = telebot.TeleBot(Settings.API_TOKEN)
+
+# Notify group when is time to pay!
+def paymentNotify(group_id):
+    # (debug that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
+    # DEBUG, delete...
+    DB = sqlite3.connect(Settings.DatabaseFile)
+    Cursor = DB.cursor()
+    results = Cursor.execute("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getSchedule(group_id)]).fetchall()
+    DB.close()
+    n_p = Utils.numeroPartecipanti(group_id)
+    status = []
+    for i in range(0,n_p):
+        status.append(0)
+    if results:
+        Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getSchedule(group_id)])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.calcolaSoldi(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listaPartecipanti(group_id),status),parse_mode='markdown')
+    else:
+        ## until here.
+        for user in Utils.listaPartecipanti(group_id):
+            Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?)",[Utils.getSchedule(group_id),group_id,user,0])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.calcolaSoldi(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listaPartecipanti(group_id),status),parse_mode='markdown')
+
+# APScheduler background object
+scheduler = BackgroundScheduler()
+# List of all scheduled job
+jobScheduledList = []
+# Get trigger from db and load into memory
+results = Utils.getTrigger()
+for trigger in results:
+    jobScheduledList.append(scheduler.add_job(paymentNotify,CronTrigger('*','*',trigger[2],hour=8,minute=00),[trigger[1]]))
+# Start the scheduler
+scheduler.start()
 
 # Bot added in a group (also during group's creation)
 @bot.message_handler(content_types=['group_chat_created','new_chat_members'])
