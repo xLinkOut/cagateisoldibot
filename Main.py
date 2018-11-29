@@ -50,7 +50,7 @@ def start(message):
     elif message.chat.type == 'private':
         bot.send_message(message.chat.id,Statements.IT.AddMeInAGroup,parse_mode='markdown')
 
-# Callback for adding new netflixer
+# User that tap on 'I Use Netflix' button and join the bot
 @bot.callback_query_handler(func=lambda call: call.data == 'iousonetflix')
 def addMember(call):
     # Max reached 
@@ -68,6 +68,18 @@ def addMember(call):
         updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listaPartecipanti(call.message.chat.id))
         # Edit the keyboard markup of the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
+
+# Remove user that already tapped 'I Use Netflix' button
+@bot.callback_query_handler(func=lambda call: 'remove_' in call.data)
+def removeUser(call):    
+    # Delete user from db
+    Utils.executeQuery("DELETE FROM PARTECIPANTI WHERE CHAT_ID=? AND GROUP_ID=?",[call.from_user.id,call.message.chat.id])
+    # Decrement counter in GROUPS table
+    Utils.executeQuery("UPDATE GROUPS SET NUMERO_PARTECIPANTI=NUMERO_PARTECIPANTI - 1 WHERE GROUP_ID=?",[call.message.chat.id])
+    # Create an updated keyboard
+    updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listaPartecipanti(call.message.chat.id))
+    # Edit keyboard markup in the same message
+    bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
 
 
 # Put bot in polling state, waiting for incoming message
