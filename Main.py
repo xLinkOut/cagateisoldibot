@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import telebot, logging, os
-import Settings, Statements, Keyboards
+import Settings, Statements, Keyboards, Utils
 
 from time import strftime as current_date
 from datetime import datetime
