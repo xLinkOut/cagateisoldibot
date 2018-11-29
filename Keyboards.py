@@ -14,8 +14,7 @@ YesBtn = InlineKeyboardButton(text='Yes ✅',callback_data='yes')
 NoBtn = InlineKeyboardButton(text='No ❌',callback_data='no')
 Confirm.add(YesBtn,NoBtn)
 
-# -- Function that return an updated keyboard with all users that
-#    joined the bot 
+# Function that return an updated keyboard with all users that joined the bot 
 def buildKeyboardForUser(users):
     # Create a new inline keyboard markup object
     newStart = InlineKeyboardMarkup()
@@ -34,8 +33,7 @@ def buildKeyboardForUser(users):
     # Return the keyboard
     return newStart
 
-# -- Function that return an updated keyboard with all users and
-#    their payment's status 
+# Function that return an updated keyboard with all users and their payment's status 
 def buildKeyboardForPayment(users,status):
     # Translate integer status to emoji
     for index,stat in enumerate(status):
@@ -55,3 +53,7 @@ def buildKeyboardForPayment(users,status):
         # Add a button with user name and his status
         kb.add(InlineKeyboardButton(text="{} {}".format(status[index],user),callback_data='payed_{}'.format(user)))
     return kb
+
+# -- Reset Inline Keyboard -- #
+Reset = InlineKeyboardMarkup()
+Reset.add(InlineKeyboardButton('💀 Reset 💀',callback_data='reset'))
