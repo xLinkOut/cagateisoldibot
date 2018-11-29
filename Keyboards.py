@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
+Numbers = ["1️⃣","2️⃣","3️⃣","4️⃣"]
 
 # -- Start Inline Keyboard -- #
 Start = InlineKeyboardMarkup(row_width=2)
