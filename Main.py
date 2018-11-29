@@ -46,7 +46,7 @@ def paymentNotify(group_id):
     # tab
     for user in Utils.listNetflixers(group_id):
         Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?)",[Utils.getExpiration(group_id),group_id,user,0])
-    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listNetflixers(group_id),status),parse_mode='markdown')
+    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listNetflixers(group_id),[0,0,0,0]),parse_mode='markdown')
 
 # APScheduler background object
 scheduler = BackgroundScheduler()
@@ -62,12 +62,13 @@ scheduler.start()
 # Bot added in a group (also during group's creation)
 @bot.message_handler(content_types=['group_chat_created','new_chat_members'])
 def added_in_a_group(message):
-    # If the member added is the bot itself
-    if int(message.new_chat_member.id) == int(bot.get_me().id):
-        # Send start message, with start keyboard and save the message id into database
-        msg_id = bot.send_message(message.chat.id,Statements.IT.Start.replace('$$',message.from_user.first_name),reply_markup=Keyboards.Start,parse_mode='markdown').message_id
-        # Create an half-empty record for the new group
-        Utils.executeQuery("INSERT INTO GROUPS(GROUP_ID,START_MSG_ID,ADMIN_ID) VALUES(?,?,?)",[message.chat.id,msg_id,message.from_user.id])
+    # If bot was added in a group during its creation
+    #if (message.json.group_chat_created) or (int(message.new_chat_member.id) == int(bot.get_me().id)):
+    
+    # Send start message, with start keyboard and save the message id into database
+    msg_id = bot.send_message(message.chat.id,Statements.IT.Start.replace('$$',message.from_user.first_name),reply_markup=Keyboards.Start,parse_mode='markdown').message_id
+    # Create an half-empty record for the new group
+    Utils.executeQuery("INSERT INTO GROUPS(GROUP_ID,START_MSG_ID,ADMIN_ID) VALUES(?,?,?)",[message.chat.id,msg_id,message.from_user.id])
 
 # Received start command
 @bot.message_handler(commands=['start'])
@@ -109,19 +110,26 @@ def addMember(call):
         updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
         # Edit the keyboard markup of the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
+        # Answer to the callback
+        bot.answer_callback_query(call.id,Statements.IT.Added,cache_time=5)
 
 # Remove user that already tapped 'I Use Netflix' button
 @bot.callback_query_handler(func=lambda call: 'remove_' in call.data)
-def removeUser(call):    
-    # Delete user from db
-    Utils.executeQuery("DELETE FROM USERS WHERE CHAT_ID=? AND GROUP_ID=?",[call.from_user.id,call.message.chat.id])
-    # Decrement counter in GROUPS table
-    Utils.executeQuery("UPDATE GROUPS SET NETFLIXERS=NETFLIXERS - 1 WHERE GROUP_ID=?",[call.message.chat.id])
-    # Create an updated keyboard
-    updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
-    # Edit keyboard markup in the same message
-    bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
-
+def removeUser(call):
+    # If name of the user is different from name in the button
+    if call.from_user.first_name != call.data[7:]:
+        bot.answer_callback_query(call.id,Statements.IT.NotPermitted,show_alert=True,cache_time=10)
+    else:
+        # Delete user from db
+        Utils.executeQuery("DELETE FROM USERS WHERE CHAT_ID=? AND GROUP_ID=?",[call.from_user.id,call.message.chat.id])
+        # Decrement counter in GROUPS table
+        Utils.executeQuery("UPDATE GROUPS SET NETFLIXERS=NETFLIXERS - 1 WHERE GROUP_ID=?",[call.message.chat.id])
+        # Create an updated keyboard
+        updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
+        # Edit keyboard markup in the same message
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
+        # Answer to the callback
+        bot.answer_callback_query(call.id,Statements.IT.Removed,cache_time=5)
 # Confirm netflixers's list
 @bot.callback_query_handler(func=lambda call: call.data == 'hereweare')
 def hereweare(call):
@@ -225,10 +233,24 @@ def payed(call):
     stato = Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.data[6:])
     # If the user has already payed
     if stato == 1:
-            bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[7:]),show_alert=True)
+            bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[6:]),show_alert=True)
     else:
-        # If the user is the admin
-        if call.from_user.id == Utils.getAdminID(call.message.chat.id):
+        # If name is different and is not admin
+        if call.from_user.first_name != call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
+            bot.answer_callback_query(call.id,'Non puoi modificare le prefenze di altri',show_alert=True,cache_time=10)
+            return
+        # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
+        elif call.from_user.first_name == call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
+                # If user is waiting for confirmation
+                if Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.first_name) == -1:
+                    bot.answer_callback_query(call.id,Statements.IT.IsWaiting,show_alert=True,cache_time=10)
+                    return
+                else:
+                    # Otherwise set user's status to -1, wait for confirmation
+                    Utils.executeQuery("UPDATE PAYMENTS SET STATUS=-1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])        
+                    bot.answer_callback_query(call.id,Statements.IT.WaitingFor,show_alert=True,cache_time=10)
+        # If is admin
+        elif call.from_user.id == Utils.getAdminID(call.message.chat.id):
             # Update payment status into db to payed
             Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])
             # Get current status of all users
@@ -241,10 +263,6 @@ def payed(call):
             if everyonePayed:
                 bot.edit_message_text(Statements.IT.EveryonePaid.replace('$$',Utils.getExpiration(call.message.chat.id)),call.message.chat.id,call.message.message_id,reply_markup={},parse_mode='markdown')
                 return
-        else:
-            # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
-            Utils.executeQuery("UPDATE PAYMENTS SET STATUS=-1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[7:],Utils.getExpiration(call.message.chat.id)])
-        
         # Get current status of all users
         status = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
         # Create an update keyboard with new status
@@ -262,9 +280,9 @@ def reset(call):
         bot.edit_message_text(Statements.IT.ConfirmReset,call.message.chat.id,call.message.message_id,reply_markup=Keyboards.Confirm,parse_mode='markdown')
 
 # DEBUG funtion that fire paymentNotify trigger 
-#@bot.message_handler(commands=['pay'])
-#def pay(message):
-#    paymentNotify(message.chat.id)
+@bot.message_handler(commands=['pay'])
+def pay(message):
+    paymentNotify(message.chat.id)
 
 # Put bot in polling state, waiting for incoming message
 bot.polling()
