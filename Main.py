@@ -168,6 +168,49 @@ def no(call):
         elif call.message.text == Statements.IT.ConfirmReset.replace('*','',2):
             bot.edit_message_text(Statements.IT.AlreadyConfigured,call.message.chat.id,call.message.message_id,reply_markup=Keyboards.Reset,parse_mode='markdown')
 
+# Expiration date confirmation
+@bot.callback_query_handler(func=lambda call: 'date_' in call.data)
+def confirmSchedule(call):
+    # If user is not admin
+    if call.from_user.id != Utils.getAdminID(call.message.chat.id):
+        bot.answer_callback_query(call.id,Statements.IT.NotAdmin,show_alert=True,cache_time=10)
+    else:
+        bot.edit_message_text(Statements.IT.ConfirmSchedule.replace('$$',call.data[5:]),call.message.chat.id,call.message.message_id,reply_markup=Keyboards.Confirm,parse_mode='markdown')
+
+# When user tap on his name in payment list
+@bot.callback_query_handler(func=lambda call: 'payed_' in call.data)
+def payed(call):
+    # Get current status of the user from db
+    stato = Utils.getSingleStatus(call.message.chat.id,Utils.getSchedule(call.message.chat.id),call.data[7:])
+    # If the user has already payed
+    if stato == 1:
+            bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[7:]),show_alert=True)
+    else:
+        # If the user is the admin
+        if call.from_user.id == Utils.getAdminID(call.message.chat.id):
+            # Update payment status into db to payed
+            Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[7:],Utils.getSchedule(call.message.chat.id)])
+            # Get current status of all users
+            results = Utils.getStatus(call.message.chat.id,Utils.getSchedule(call.message.chat.id))
+            everyonePayed = True
+            for status in results:
+                if status != 1:                
+                    everyonePayed = False
+            # If everyone has already payed
+            if everyonePayed:
+                bot.edit_message_text(Statements.IT.EveryonePaid.replace('$$',Utils.getSchedule(call.message.chat.id)),call.message.chat.id,call.message.message_id,reply_markup={},parse_mode='markdown')
+                return
+        else:
+            # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
+            Utils.executeQuery("UPDATE PAYMENTS SET STATUS=-1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[7:],Utils.getSchedule(call.message.chat.id)])
+        
+        # Get current status of all users
+        status = Utils.getStatus(call.message.chat.id,Utils.getSchedule(call.message.chat.id))
+        # Create an update keyboard with new status
+        kb = Keyboards.buildKeyboardForPayment(Utils.listaPartecipanti(call.message.chat.id),status)
+        # Edit message markup with updated keyboard
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=kb)
+
 
 # Put bot in polling state, waiting for incoming message
 bot.polling()
