@@ -65,18 +65,18 @@ def groupAlreadyExists(group_id):
         return False
 
 # Return the payment's status of a specific user on a specific date
-def getSingleStatus(group_id,data,nome):
+def getSingleStatus(group_id,expiration,firstname):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
-    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=? AND FIRST_NAME=?",[group_id,data,nome]).fetchone()
+    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=? AND FIRST_NAME=?",[group_id,expiration,firstname]).fetchone()
     DB.close()
     return results[0]
 
 # Return a list with all the payment's status for each user on a specific date
-def getStatus(group_id,data):
+def getStatus(group_id,expiration):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
-    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,data]).fetchall()
+    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,expiration]).fetchall()
     DB.close()
     status = []
     for stat in results:
