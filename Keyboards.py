@@ -53,5 +53,5 @@ def buildKeyboardForPayment(users,status):
     # For each user in list
     for index,user in enumerate(users):
         # Add a button with user name and his status
-        kb.add(InlineKeyboardButton(text="{} {}".format(status[index],user),callback_data='pagato_{}'.format(user)))
+        kb.add(InlineKeyboardButton(text="{} {}".format(status[index],user),callback_data='payed_{}'.format(user)))
     return kb
