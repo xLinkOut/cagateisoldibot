@@ -8,3 +8,7 @@ Installation:
     write token in Settings.py file, API_TOKEN
     python3 CreateDB.py
     python3 Main.py
+
+:TODO
+    Notify member when payment is confimed by admin
+    Notify admin if bot removed from a group
