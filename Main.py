@@ -50,6 +50,25 @@ def start(message):
     elif message.chat.type == 'private':
         bot.send_message(message.chat.id,Statements.IT.AddMeInAGroup,parse_mode='markdown')
 
+# Callback for adding new netflixer
+@bot.callback_query_handler(func=lambda call: call.data == 'iousonetflix')
+def addMember(call):
+    # Max reached 
+    if Utils.numeroPartecipanti(call.message.chat.id) == 4:
+        bot.answer_callback_query(call.id,Statements.IT.MaxReached,show_alert=True)
+    # Duplicated user
+    elif call.from_user.first_name in Utils.listaPartecipanti(call.message.chat.id):
+        bot.answer_callback_query(call.id,Statements.IT.AlreadySigned,show_alert=True)
+    else:
+        # Add user in USERS table
+        Utils.executeQuery("INSERT INTO USERS(GROUP_ID,CHAT_ID,USERNAME,FIRST_NAME) VALUES (?,?,?,?)",[call.from_user.id,call.from_user.username,call.from_user.first_name,call.message.chat.id])
+        # Update record in GROUPS table, increment number of user joined
+        Utils.executeQuery("UPDATE GROUPS SET NETFLIXERS=NETFLIXERS+1 WHERE GROUP_ID=?",[call.message.chat.id])
+        # Create an updated keyboard with new member
+        updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listaPartecipanti(call.message.chat.id))
+        # Edit the keyboard markup of the same message
+        bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
+
 
 # Put bot in polling state, waiting for incoming message
 bot.polling()
