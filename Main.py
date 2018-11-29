@@ -170,7 +170,7 @@ def no(call):
 
 # Expiration date confirmation
 @bot.callback_query_handler(func=lambda call: 'date_' in call.data)
-def confirmSchedule(call):
+def confirmExpiration(call):
     # If user is not admin
     if call.from_user.id != Utils.getAdminID(call.message.chat.id):
         bot.answer_callback_query(call.id,Statements.IT.NotAdmin,show_alert=True,cache_time=10)
@@ -211,6 +211,14 @@ def payed(call):
         # Edit message markup with updated keyboard
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=kb)
 
+# Reset current group's configuration 
+@bot.callback_query_handler(func=lambda call: call.data == 'reset')
+def reset(call):
+    # If user is not the admin
+    if call.from_user.id != Utils.getAdminID(call.message.chat.id):
+        bot.answer_callback_query(call.id,Statements.IT.NotAdmin,show_alert=True,cache_time=10)
+    else:
+        bot.edit_message_text(Statements.IT.ConfirmReset,call.message.chat.id,call.message.message_id,reply_markup=Keyboards.Confirm,parse_mode='markdown')
 
 # Put bot in polling state, waiting for incoming message
 bot.polling()
