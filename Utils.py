@@ -32,7 +32,7 @@ def getAdminID(group_id):
         return None
 
 # Return a list with name of users in a group
-def listaPartecipanti(group_id):
+def listNetflixers(group_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()    
     results = Cursor.execute("SELECT FIRST_NAME FROM USERS WHERE GROUP_ID=? ORDER BY FIRST_NAME",[group_id]).fetchall()
@@ -46,7 +46,7 @@ def listaPartecipanti(group_id):
         return []
 
 # Return (as int) the number of users that joined a group
-def numeroPartecipanti(group_id):
+def countNetflixers(group_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()    
     results = int(Cursor.execute("SELECT NETFLIXERS FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()[0])
@@ -84,7 +84,7 @@ def getStatus(group_id,data):
     return status
 
 # Return the expiration date of a specified group in the format YYYY-MM-DD
-def getSchedule(group_id):
+def getExpiration(group_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT EXPIRATION FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
@@ -118,14 +118,15 @@ def getTriggerID(group_id):
     else:
         return None
 
-# Return eash 
-def calcolaSoldi(group_id):
-    numerop = numeroPartecipanti(group_id)
-    if numerop == 4:
+# Return amount of money for each user 
+# :TODO Improve this function, that's too bad
+def moneyEach(group_id):
+    n = countNetflixers(group_id)
+    if n == 4:
         return "3.50"
-    elif numerop == 3:
+    elif n == 3:
         return "4.50"
-    elif numerop == 2:
+    elif n == 2:
         return "6"
     else:
         return "8"
