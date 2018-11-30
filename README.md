@@ -1,6 +1,7 @@
 # CagateISoldiBot
 Telegram bot to manage Netflix's shared account with your friends and family.
-__(In english 'cagate i soldi' is something like 'give me your money')__
+
+_(In english 'cagate i soldi' is something like 'give me your money')_
 
 ## Installation:
 ```bash
