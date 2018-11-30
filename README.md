@@ -1,14 +1,22 @@
-# cagateisoldibot
+# CagateISoldiBot
 Telegram bot to manage Netflix's shared account with your friends and family.
+__(In english 'cagate i soldi' is something like 'give me your money')__
 
-Installation:
-    virtualenv -p python3 venv
-    source /venv/bin/activate
-    pip3 install -r requirements.txt
-    write token in Settings.py file, API_TOKEN
-    python3 CreateDB.py
-    python3 Main.py
+## Installation:
+```bash
+    $ virtualenv -p python3 venv #(optional)
+    $ source /venv/bin/activate #(optional)
+    $ pip3 install -r requirements.txt --user
+    $ sed 's/INSERT_TOKEN_HERE/YOUR_TOKEN/' -i Settings.py
+    $ python3 CreateDB.py
+    $ python3 Main.py
+```
+**Replace YOUR_TOKEN with bot's token given by BotFather**
 
-:TODO
-    Notify member when payment is confimed by admin
-    Notify admin if bot removed from a group
+
+## TODO
+- [ ] Notify member when payment is confimed by admin
+- [ ] Notify admin if bot removed from a group
+
+## Try it here!
+It's still in beta and can stop working/lost data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
