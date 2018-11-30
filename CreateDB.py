@@ -29,13 +29,13 @@ Cursor.execute("CREATE TABLE GROUPS ("
 # Create a table named USERS that contain information about each user for each group
 # +------------+-----------+--------------------+--------------------------+
 # | GROUP_ID   | INT(50)   | NOT NULL           | Telegram group's ID      |
-# | CHAT_ID    | INT(50)   | PRIMARY KEY UNIQUE | Telegram user's ID       |
+# | CHAT_ID    | INT(50)   | PRIMARY KEY        | Telegram user's ID       |
 # | USERNAME   | TEXT(255) | DEFAULT NULL       | User's Telegram username |
 # | FIRST_NAME | TEXT(255) | DEFAULT NULL       | User's first name        |
 # +------------+-----------+--------------------+--------------------------+
 Cursor.execute("CREATE TABLE USERS ("
                  "GROUP_ID INT(50) NOT NULL,"
-                 "CHAT_ID INT(50) PRIMARY KEY NOT NULL UNIQUE,"
+                 "CHAT_ID INT(50) PRIMARY KEY NOT NULL,"
                  "USERNAME TEXT(255) DEFAULT NULL,"
                  "FIRST_NAME TEXT(255) DEFAULT NULL" 
                 ")")
