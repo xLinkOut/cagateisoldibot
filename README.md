@@ -20,4 +20,4 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
 - [ ] Notify admin if bot removed from a group
 
 ## Try it here!
-It's still in beta and can stop working/lost data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
+It's still in beta and can stop working/lose data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
