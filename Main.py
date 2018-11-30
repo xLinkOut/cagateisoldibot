@@ -16,13 +16,13 @@ if not (os.path.isfile(Settings.DatabaseFile)):
     exit(-1)
 
 # Check for token
-if Settings.API_TOKEN == '':
+if Settings.API_TOKEN == '' or Settings.API_TOKEN == 'INSERT_TOKEN_HERE':
     print('Token not valid!')
     exit(-1)
 
 # Create a logger, then set its level to DEBUG (alternatively, INFO)
 logger = telebot.logger
-telebot.logger.setLevel(logging.DEBUG)
+telebot.logger.setLevel(logging.INFO)
 # Create bot obj with token in settings file
 bot = telebot.TeleBot(Settings.API_TOKEN)
 
