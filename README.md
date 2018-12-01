@@ -7,7 +7,7 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
 ```bash
     $ virtualenv -p python3 venv #(optional)
     $ source venv/bin/activate #(optional)
-    $ pip3 install -r requirements.txt --user
+    $ pip3 install -r requirements.txt
     $ sed 's/INSERT_TOKEN_HERE/YOUR_TOKEN/' -i Settings.py
     $ python3 CreateDB.py
     $ python3 Main.py
