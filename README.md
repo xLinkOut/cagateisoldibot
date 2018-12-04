@@ -14,6 +14,9 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
 ```
 **Replace YOUR_TOKEN with bot's token given by BotFather**
 
+### Demo
+[![asciicast](https://asciinema.org/a/215057.svg)](https://asciinema.org/a/215057)
+
 
 ## TODO
 - [ ] Notify member when payment is confimed by admin
