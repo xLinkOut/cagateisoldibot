@@ -285,4 +285,13 @@ def pay(message):
     paymentNotify(message.chat.id)
 
 # Put bot in polling state, waiting for incoming message
-bot.polling()
+try:
+    bot.polling()
+except socket.timeout:
+    print("socket.timeout exception")
+except urllib3.exceptions.ReadTimeoutError:
+    print("urllib3.exceptions.ReadTimeoutError")
+except requests.exceptions.ReadTimeout:
+    print("requests.exceptions.ReadTimeout")
+except Exception as e:
+    print(e)
