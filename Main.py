@@ -22,7 +22,7 @@ if Settings.API_TOKEN == '' or Settings.API_TOKEN == 'INSERT_TOKEN_HERE':
 
 # Create a logger, then set its level to DEBUG (alternatively, INFO)
 logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+telebot.logger.setLevel(logging.DEBUG)
 # Create bot obj with token in settings file
 bot = telebot.TeleBot(Settings.API_TOKEN)
 
@@ -159,7 +159,7 @@ def yes(call):
         if call.message.text[:34] == Statements.IT.ConfirmList:
             bot.edit_message_text(Statements.IT.Schedule,call.message.chat.id,call.message.message_id,reply_markup=Keyboards.DateKeyboard,parse_mode='markdown')
         # Expiration's date confirmation
-        elif call.message.text[:-4] == Statements.IT.ConfirmSchedule[:-6]:
+        elif call.message.text[:-4] == Statements.IT.ConfirmSchedule[:-6] or call.message.text[:-3] == Statements.IT.ConfirmSchedule[:-6]:
             # Save expiration date in a var
             Expiration = ''.join(i for i in call.message.text if i.isdigit())
             # Update expiration date into db            
