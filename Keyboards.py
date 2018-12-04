@@ -91,6 +91,6 @@ DateKeyboard.add(
     InlineKeyboardButton(text='27',callback_data='date_27'),
     InlineKeyboardButton(text='28',callback_data='date_28'),
     InlineKeyboardButton(text='29',callback_data='date_29'),
-    InlineKeyboardButton(text='30',callback_data='date_30'),
-    InlineKeyboardButton(text='31',callback_data='date_31')
+    InlineKeyboardButton(text='30',callback_data='date_30')
+    #InlineKeyboardButton(text='31',callback_data='date_31')
 )
