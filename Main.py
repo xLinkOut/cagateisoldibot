@@ -261,7 +261,7 @@ def payed(call):
                     everyonePayed = False
             # If everyone has already payed
             if everyonePayed:
-                bot.edit_message_text(Statements.IT.EveryonePaid.replace('$$',Utils.getExpiration(call.message.chat.id)),call.message.chat.id,call.message.message_id,reply_markup={},parse_mode='markdown')
+                bot.edit_message_text(Statements.IT.EveryonePaid.replace('$$',Utils.newExpiration(Utils.getExpiration(call.message.chat.id))),call.message.chat.id,call.message.message_id,reply_markup={},parse_mode='markdown')
                 return
         # Get current status of all users
         status = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
@@ -287,11 +287,5 @@ def pay(message):
 # Put bot in polling state, waiting for incoming message
 try:
     bot.polling()
-except socket.timeout:
-    print("socket.timeout exception")
-except urllib3.exceptions.ReadTimeoutError:
-    print("urllib3.exceptions.ReadTimeoutError")
-except requests.exceptions.ReadTimeout:
-    print("requests.exceptions.ReadTimeout")
 except Exception as e:
     print(e)

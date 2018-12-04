@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import sqlite3, datetime, Settings
+import sqlite3, datetime, calendar, Settings
 
 # Execute a generic SQL query
 def executeQuery(query, args):
@@ -130,3 +130,15 @@ def moneyEach(group_id):
         return "6"
     else:
         return "8"
+
+# Return next expiration date in string and explicit form
+def newExpiration(sourcedate,months=1):
+    # shttps://stackoverflow.com/questions/4130922/how-to-increment-datetime-by-custom-months-in-python-without-using-library
+    sourcedate = datetime.datetime.strptime(sourcedate,'%Y-%m-%d')
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day,calendar.monthrange(year,month)[1])
+    months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]
+    return "{} {} {}".format(day,months[month],year)
+    #return datetime.datetime.strftime(datetime.date(year,month,day),'%Y-%m-%d')
