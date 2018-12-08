@@ -35,9 +35,10 @@ Cursor.execute("CREATE TABLE GROUPS ("
 # +------------+-----------+--------------------+--------------------------+
 Cursor.execute("CREATE TABLE USERS ("
                  "GROUP_ID INT(50) NOT NULL,"
-                 "CHAT_ID INT(50) PRIMARY KEY NOT NULL,"
+                 "CHAT_ID INT(50) NOT NULL,"
                  "USERNAME TEXT(255) DEFAULT NULL,"
-                 "FIRST_NAME TEXT(255) DEFAULT NULL" 
+                 "FIRST_NAME TEXT(255) DEFAULT NULL,"
+                 "PRIMARY KEY (GROUP_ID,CHAT_ID)"
                 ")")
 
 # Create a table named PAYMENTS that contain information about payment for each user for each group
