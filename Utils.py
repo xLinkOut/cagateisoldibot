@@ -31,6 +31,17 @@ def getAdminID(group_id):
     else:
         return None
 
+# Get Username from DB
+def getUsername(group_id,first_name):
+    DB = sqlite3.connect(Settings.DatabaseFile)
+    Cursor = DB.cursor()
+    results = Cursor.execute("SELECT USERNAME FROM USERS WHERE GROUP_ID=? AND FIRST_NAME=?",[group_id,first_name]).fetchone()
+    DB.close()
+    if results and len(results) > 0:
+        return results[0]
+    else:
+        return None
+
 # Return a list with name of users in a group
 def listNetflixers(group_id):
     DB = sqlite3.connect(Settings.DatabaseFile)

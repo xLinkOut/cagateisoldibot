@@ -253,6 +253,10 @@ def payed(call):
         elif call.from_user.id == Utils.getAdminID(call.message.chat.id):
             # Update payment status into db to payed
             Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])
+            username = "@{}".format(str(Utils.getUsername(call.message.chat.id,call.data[6:])))
+            if not username:
+                username = call.data[6:]
+            bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
             # Get current status of all users
             results = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
             everyonePayed = True

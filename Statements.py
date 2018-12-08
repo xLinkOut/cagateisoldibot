@@ -19,6 +19,7 @@ IT.EveryonePaid = "Tutti hanno pagato la propria parte! Prossimo appuntamento il
 IT.AlreadyConfigured = "Le impostazioni per questo gruppo sono già state confermate oppure una procedura di configurazione è in corso. Se hai bisogno di ripartire da zero, premi sotto"
 IT.NewConfig = "Per riconfigurare il gruppo, premi 👉 /start"
 IT.ConfirmReset = "Sicuro di voler resettare le impostazioni? *Questa azione è irreversibile.*"
+IT.PaymentAccepted = "Il pagamento di $$ è stato *accettato*! ✅"
     # Callback query
 IT.MaxReached = "⚠️ E' già stato raggiunto il numero massimo di partecipanti (4)!"
 IT.AlreadySigned = "Sei già un Netflixers! 😎\nSe hai premuto per sbaglio oppure hai cambiato idea, puoi toglierti dalla lista facendo un tap sul tuo nome."
