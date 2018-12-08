@@ -19,7 +19,7 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
 
 
 ## TODO
-- [ ] Notify member when payment is confimed by admin
+- [x] Notify member when payment is confimed by admin // check
 - [ ] Notify admin if bot removed from a group
 
 ## Try it here!
