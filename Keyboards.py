@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton
+from telebot.types import InlineKeyboardMarkup,InlineKeyboardButton,ReplyKeyboardMarkup,KeyboardButton
 Numbers = ["1️⃣","2️⃣","3️⃣","4️⃣"]
 
 # -- Start Inline Keyboard -- #
@@ -94,3 +94,9 @@ DateKeyboard.add(
     InlineKeyboardButton(text='30',callback_data='date_30')
     #InlineKeyboardButton(text='31',callback_data='date_31')
 )
+
+# -- Start Keyboard -- #
+StartPrivate = ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
+DonateBtn = KeyboardButton("🎁 Donate")
+AboutBtn = KeyboardButton("❓ About")
+StartPrivate.add(DonateBtn,AboutBtn)
