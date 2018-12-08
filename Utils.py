@@ -140,5 +140,5 @@ def newExpiration(sourcedate,months=1):
     month = month % 12 + 1
     day = min(sourcedate.day,calendar.monthrange(year,month)[1])
     months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]
-    return "{} {} {}".format(day,months[month],year)
+    return "{} {} {}".format(day,months[month-1],year)
     #return datetime.datetime.strftime(datetime.date(year,month,day),'%Y-%m-%d')
