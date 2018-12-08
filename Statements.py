@@ -32,4 +32,12 @@ IT.Removed = "Rimosso ✅"
 IT.IsWaiting = "⚠️ Sei già in attesa di conferma."
 IT.WaitingFor = "⏳ Attendi la conferma dell'avvenuto pagamento da parte dell'amministratore."
     # Private Chat Statements
-IT.AddMeInAGroup = "⚠️ La chat privata *non* è attualmente disponibile! Lo sarà in futuro, per permettere la gestione dei propri gruppi Netflix. ⚙️\nPer ora, prova ad aggiungermi in un gruppo!"
+IT.Welcome = ("Ciao *$$*! Io sono un bot, e ti aiuterò a gestire il tuo gruppo Netflix. 😊\n\n"
+             "Prima di cominciare devi sapere che sono ancora in uno stadio di sviluppo _alpha_, potrebbero quindi verificarsi comportamenti non previsti. "
+             "Se riscontri qualche tipo di problema, o per qualsiasi altra cosa, ti invito a contattare il mio programmatore @LinkOut, sarà lieto di aiutarti. "
+             "Se sei un programmatore anche tu puoi trovarmi su [GitHub](https://github.com/xLinkOut/cagateisoldibot)\n\n"
+             "Ecco qualche informazione utile: per funzionare, aggiungimi in un gruppo usando il nickname @cagateisoldibot. "
+             "Il primo step sarà quello di 📝 segnare tutte le persone che condividono Netlifx con te, poi seguirà una velocissima configurazione dove potrai indicare il 📆 giorno del mese in cui l'abbonamento si rinnova."
+             "In quel giorno, ogni mese, manderò una notifica con una lista dove le persone che hanno pagato potranno segnarsi, e dove poi tu dovrai confermare il pagamento.\n\n"
+             "*That's it!* Nuove funzioni sono in sviluppo e arriveranno presto. Questo progetto è completamente gratuito, ma i server costano; se sei interessato a partecipare trovi il tasto 🎁 Dona nella tastiera in basso."
+)
