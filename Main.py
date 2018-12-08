@@ -90,7 +90,7 @@ def start(message):
                 bot.send_message(message.chat.id,Statements.IT.UseThis,reply_to_message_id=Utils.getMessageID(message.chat.id),parse_mode='markdown',reply_markup=Keyboards.Reset)
     # Else if is a private chat
     elif message.chat.type == 'private':
-        bot.send_message(message.chat.id,Statements.IT.AddMeInAGroup,parse_mode='markdown')
+        bot.send_message(message.chat.id,Statements.IT.Welcome.replace('$$',message.from_user.first_name),parse_mode='markdown',reply_markup=Keyboards.StartPrivate,disable_web_page_preview=True)
 
 # User that tap on 'I Use Netflix' button and join the bot
 @bot.callback_query_handler(func=lambda call: call.data == 'iusenetflix')
@@ -283,6 +283,7 @@ def reset(call):
 @bot.message_handler(commands=['pay'])
 def pay(message):
     paymentNotify(message.chat.id)
+
 
 # Put bot in polling state, waiting for incoming message
 try:
