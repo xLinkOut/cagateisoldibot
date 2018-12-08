@@ -39,5 +39,6 @@ IT.Welcome = ("Ciao *$$*! Io sono un bot, e ti aiuterò a gestire il tuo gruppo 
              "Ecco qualche informazione utile: per funzionare, aggiungimi in un gruppo usando il nickname @cagateisoldibot. "
              "Il primo step sarà quello di 📝 segnare tutte le persone che condividono Netlifx con te, poi seguirà una velocissima configurazione dove potrai indicare il 📆 giorno del mese in cui l'abbonamento si rinnova."
              "In quel giorno, ogni mese, manderò una notifica con una lista dove le persone che hanno pagato potranno segnarsi, e dove poi tu dovrai confermare il pagamento.\n\n"
-             "*That's it!* Nuove funzioni sono in sviluppo e arriveranno presto. Questo progetto è completamente gratuito, ma i server costano; se sei interessato a partecipare trovi il tasto 🎁 Dona nella tastiera in basso."
-)
+             "*That's it!* Nuove funzioni sono in sviluppo e arriveranno presto. Questo progetto è completamente gratuito, ma i server costano; se sei interessato a partecipare trovi il tasto 🎁 Dona nella tastiera in basso.")
+IT.Donate = "Per supportare il progetto puoi donare tramite PayPal a [questa pagina](https://paypal.me/LCirillo). ❤️"
+IT.About = "Progettato e scritto interamente da @LinkOut.\nSpecial thanks:\n - Il mio coinquilino per il nome del bot;\n - [eternnoir](https://github.com/eternnoir/pyTelegramBotAPI) per la libreria pyTelegramBotAPI;\n - [PythonAnywhere](https://www.pythonanywhere.com) per l'hosting."
