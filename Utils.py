@@ -27,20 +27,47 @@ def getAdminID(group_id):
     results = Cursor.execute("SELECT ADMIN_ID FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
     if results and len(results) > 0:
-        return results[0]
+        return int(results[0])
     else:
         return None
 
 # Get Username from DB
-def getUsername(group_id,first_name):
+def getUsername(group_id,chat_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
-    results = Cursor.execute("SELECT USERNAME FROM USERS WHERE GROUP_ID=? AND FIRST_NAME=?",[group_id,first_name]).fetchone()
+    results = Cursor.execute("SELECT USERNAME FROM USERS WHERE GROUP_ID=? AND CHAT_ID=?",[group_id,first_name]).fetchone()
     DB.close()
     if results and len(results) > 0:
         return results[0]
     else:
         return None
+
+# Get user data from DB by groupID and chatID
+def getUser(group_id,chat_id):
+    DB = sqlite3.connect(Settings.DatabaseFile)
+    Cursor = DB.cursor()
+    result = Cursor.execute("SELECT CHAT_ID,USERNAME,FIRST_NAME FROM USERS WHERE GROUP_ID=? AND CHAT_ID=?",[group_id,chat_id]).fetchone()
+    DB.close()
+    if result and len(result) > 0:
+        return list(result)
+        # List format:
+        #   [0] = ChatID
+        #   [1] = Username
+        #   [2] = First name
+    else:
+        return None
+
+# Get all user that joined a group from DB by groupID
+def getAllUsers(group_id):
+    DB = sqlite3.connect(Settings.DatabaseFile)
+    Cursor = DB.cursor()
+    results = Cursor.execute("SELECT CHAT_ID,USERNAME,FIRST_NAME FROM USERS WHERE GROUP_ID=?",[group_id]).fetchall()
+    DB.close()
+    print(results)
+    if results and len(results) > 0:
+        return results
+    else:
+        return None    
 
 # Return a list with name of users in a group
 def listNetflixers(group_id):
@@ -76,10 +103,10 @@ def groupAlreadyExists(group_id):
         return False
 
 # Return the payment's status of a specific user on a specific date
-def getSingleStatus(group_id,expiration,firstname):
+def getSingleStatus(group_id,expiration,chat_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
-    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=? AND FIRST_NAME=?",[group_id,expiration,firstname]).fetchone()
+    results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE EXPIRATION=? AND GROUP_ID=? AND CHAT_ID=?",[expiration,group_id,chat_id]).fetchone()
     DB.close()
     return results[0]
 
