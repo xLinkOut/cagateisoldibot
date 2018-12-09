@@ -32,7 +32,7 @@ IT.Added = "Aggiunto ✅"
 IT.Removed = "Rimosso ✅"
 IT.IsWaiting = "⚠️ Sei già in attesa di conferma."
 IT.WaitingFor = "⏳ Attendi la conferma dell'avvenuto pagamento da parte dell'amministratore."
-IT.AlmostDone = "Ci siamo quasi..."
+IT.AlmostDone = "⏳ Ci siamo quasi..."
     # Private Chat Statements
 IT.Welcome = ("Ciao *$$*! Io sono un bot, e ti aiuterò a gestire il tuo gruppo Netflix. 😊\n\n"
              "Prima di cominciare devi sapere che sono ancora in uno stadio di sviluppo _alpha_, potrebbero quindi verificarsi comportamenti non previsti. "
@@ -43,4 +43,4 @@ IT.Welcome = ("Ciao *$$*! Io sono un bot, e ti aiuterò a gestire il tuo gruppo 
              "In quel giorno, ogni mese, manderò una notifica con una lista dove le persone che hanno pagato potranno segnarsi, e dove poi tu dovrai confermare il pagamento.\n\n"
              "*That's it!* Nuove funzioni sono in sviluppo e arriveranno presto. Questo progetto è completamente gratuito, ma i server costano; se sei interessato a partecipare trovi il tasto 🎁 Dona nella tastiera in basso.")
 IT.Donate = "Per supportare il progetto puoi donare tramite PayPal a [questa pagina](https://paypal.me/LCirillo). ❤️"
-IT.About = "Progettato e scritto interamente da @LinkOut.\nSpecial thanks:\n - Il mio coinquilino per il nome del bot;\n - [eternnoir](https://github.com/eternnoir/pyTelegramBotAPI) per la libreria pyTelegramBotAPI;\n - [PythonAnywhere](https://www.pythonanywhere.com) per l'hosting."
+IT.About = "Made with ❤️ and a lot of </code> by @LinkOut. 👨‍💻\n\n🌠 Special thanks to:\n 🔹 Il mio coinquilino per il bellissimo nome dato al bot\n 🔹 [eternnoir](https://github.com/eternnoir/pyTelegramBotAPI) per la libreria pyTelegramBotAPI\n 🔹 [PythonAnywhere](https://www.pythonanywhere.com) per l'hosting."
