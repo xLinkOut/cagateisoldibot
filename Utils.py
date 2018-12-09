@@ -52,7 +52,6 @@ def getAllUsers(group_id):
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT CHAT_ID,USERNAME,FIRST_NAME FROM USERS WHERE GROUP_ID=?",[group_id]).fetchall()
     DB.close()
-    print(results)
     if results and len(results) > 0:
         return results
     else:

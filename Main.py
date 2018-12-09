@@ -112,7 +112,7 @@ def addMember(call):
         # Edit the keyboard markup of the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
         # Answer to the callback
-        bot.answer_callback_query(call.id,Statements.IT.Added,cache_time=5)
+        bot.answer_callback_query(call.id,Statements.IT.Added)
 
 # Remove user that already tapped 'I Use Netflix' button
 @bot.callback_query_handler(func=lambda call: 'remove_' in call.data)
@@ -131,7 +131,7 @@ def removeUser(call):
         # Edit keyboard markup in the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
         # Answer to the callback
-        bot.answer_callback_query(call.id,Statements.IT.Removed,cache_time=5)
+        bot.answer_callback_query(call.id,Statements.IT.Removed)
 
 # Confirm netflixers's list
 @bot.callback_query_handler(func=lambda call: call.data == 'hereweare')
@@ -150,6 +150,7 @@ def hereweare(call):
                 netflixers += "{} {}\n".format(Keyboards.Numbers[index],user)
             # Update the same message with a new list 
             bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text="{}\n\n*{}*".format(Statements.IT.ConfirmList,netflixers),reply_markup=Keyboards.Confirm,parse_mode='markdown')
+            bot.answer_callback_query(call.id,Statements.IT.AlmostDone,cache_time=5)
 
 # Handler for general 'yes' callback
 @bot.callback_query_handler(func=lambda call: call.data == 'yes')
@@ -212,7 +213,7 @@ def no(call):
     else:
         # If callback is coming from list's confirmation message
         if call.message.text[:34] == Statements.IT.ConfirmList:
-            bot.edit_message_text(Statements.IT.Start.replace('$$',call.from_user.first_name),call.message.chat.id,call.message.message_id,reply_markup=Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id)),parse_mode='markdown')
+            bot.edit_message_text(Statements.IT.Start.replace('$$',call.from_user.first_name),call.message.chat.id,call.message.message_id,reply_markup=Keyboards.buildKeyboardForUser(call.message.chat.id),parse_mode='markdown')
         # If callback is coming from expiration's confirmation message
         elif call.message.text[:-4] == Statements.IT.ConfirmSchedule[:-6]:
             bot.edit_message_text(Statements.IT.Schedule,call.message.chat.id,call.message.message_id,reply_markup=Keyboards.DateKeyboard,parse_mode='markdown')
@@ -256,10 +257,11 @@ def payed(call):
         elif int(call.from_user.id) == Utils.getAdminID(call.message.chat.id):
             # Update payment status into db to payed
             Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND CHAT_ID=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])
-            username = "@{}".format(str(Utils.getUser(call.message.chat.id,call.data[6:])[1]))
-            if not username:
-                username = Utils.getUser(call.message.chat.id,call.data[6:])[2]
-            bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
+            if int(call.from_user.id) != int(call.data[6:]):
+                username = "@{}".format(str(Utils.getUser(call.message.chat.id,call.data[6:])[1]))
+                if not username:
+                    username = Utils.getUser(call.message.chat.id,call.data[6:])[2]
+                bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
             # Get current status of all users
             results = Utils.getAllStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
             everyonePayed = True
