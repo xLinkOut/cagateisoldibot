@@ -31,17 +31,6 @@ def getAdminID(group_id):
     else:
         return None
 
-# Get Username from DB
-def getUsername(group_id,chat_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
-    Cursor = DB.cursor()
-    results = Cursor.execute("SELECT USERNAME FROM USERS WHERE GROUP_ID=? AND CHAT_ID=?",[group_id,first_name]).fetchone()
-    DB.close()
-    if results and len(results) > 0:
-        return results[0]
-    else:
-        return None
-
 # Get user data from DB by groupID and chatID
 def getUser(group_id,chat_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
@@ -103,15 +92,15 @@ def groupAlreadyExists(group_id):
         return False
 
 # Return the payment's status of a specific user on a specific date
-def getSingleStatus(group_id,expiration,chat_id):
+def getStatus(group_id,expiration,chat_id):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE EXPIRATION=? AND GROUP_ID=? AND CHAT_ID=?",[expiration,group_id,chat_id]).fetchone()
     DB.close()
     return results[0]
 
-# Return a list with all the payment's status for each user on a specific date
-def getStatus(group_id,expiration):
+# Return a list with all the payments status for each user on a specific date
+def getAllStatus(group_id,expiration):
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,expiration]).fetchall()
@@ -138,7 +127,7 @@ def saveTrigger(trigger_id,group_id,data):
     DB.close()
 
 # Return a list with all the triggers saved into db
-def getTrigger():
+def getTriggers():
     DB = sqlite3.connect(Settings.DatabaseFile)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT * FROM TRIGGER").fetchall()
