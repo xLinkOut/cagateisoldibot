@@ -26,13 +26,6 @@ telebot.logger.setLevel(logging.DEBUG)
 # Create bot obj with token in settings file
 bot = telebot.TeleBot(Settings.API_TOKEN)
 
-# TEST CODE AREA
-
-#Utils.getAllUsers('-277417609')
-
-#exit()
-# END TEST CODE AREA
-
 # Notify group when is time to pay!
 def paymentNotify(group_id):
     # (debug that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
@@ -63,7 +56,7 @@ scheduler = BackgroundScheduler()
 # List of all scheduled job
 jobScheduledList = []
 # Get trigger from db and load into memory
-results = Utils.getTrigger()
+results = Utils.getTriggers()
 for trigger in results:
     jobScheduledList.append(scheduler.add_job(paymentNotify,CronTrigger('*','*',trigger[2],hour=8,minute=00),[trigger[1]]))
 # Start the scheduler
@@ -72,9 +65,6 @@ scheduler.start()
 # Bot added in a group (also during group's creation)
 @bot.message_handler(content_types=['group_chat_created','new_chat_members'])
 def added_in_a_group(message):
-    # If bot was added in a group during its creation
-    #if (message.json.group_chat_created) or (int(message.new_chat_member.id) == int(bot.get_me().id)):
-    
     # Send start message, with start keyboard and save the message id into database
     msg_id = bot.send_message(message.chat.id,Statements.IT.Start.replace('$$',message.from_user.first_name),reply_markup=Keyboards.Start,parse_mode='markdown').message_id
     # Create an half-empty record for the new group
@@ -127,7 +117,6 @@ def addMember(call):
 # Remove user that already tapped 'I Use Netflix' button
 @bot.callback_query_handler(func=lambda call: 'remove_' in call.data)
 def removeUser(call):
-    print(call.data)
     # If id of the user is different from id the user in button
     if int(call.from_user.id) != int(call.data[7:]):
         bot.answer_callback_query(call.id,Statements.IT.NotPermitted,show_alert=True,cache_time=10)
@@ -143,6 +132,7 @@ def removeUser(call):
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
         # Answer to the callback
         bot.answer_callback_query(call.id,Statements.IT.Removed,cache_time=5)
+
 # Confirm netflixers's list
 @bot.callback_query_handler(func=lambda call: call.data == 'hereweare')
 def hereweare(call):
@@ -242,9 +232,8 @@ def confirmExpiration(call):
 # When user tap on his name in payment list
 @bot.callback_query_handler(func=lambda call: 'payed_' in call.data)
 def payed(call):
-    print(call.data)
     # Get current status of the user from db
-    stato = Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.data[6:])
+    stato = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.data[6:])
     # If the user has already payed
     if stato == 1:
             bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[6:]),show_alert=True)
@@ -256,7 +245,7 @@ def payed(call):
         # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
         elif call.from_user.id == call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
                 # If user is waiting for confirmation
-                if Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.id) == -1:
+                if Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.id) == -1:
                     bot.answer_callback_query(call.id,Statements.IT.IsWaiting,show_alert=True,cache_time=10)
                     return
                 else:
@@ -272,7 +261,7 @@ def payed(call):
                 username = Utils.getUser(call.message.chat.id,call.data[6:])[2]
             bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
             # Get current status of all users
-            results = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
+            results = Utils.getAllStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
             everyonePayed = True
             for status in results:
                 if status != 1:                
@@ -282,7 +271,7 @@ def payed(call):
                 bot.edit_message_text(Statements.IT.EveryonePaid.replace('$$',Utils.newExpiration(Utils.getExpiration(call.message.chat.id))),call.message.chat.id,call.message.message_id,reply_markup={},parse_mode='markdown')
                 return
         # Get current status of all users
-        status = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
+        status = Utils.getAllStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
         # Create an update keyboard with new status
         kb = Keyboards.buildKeyboardForPayment(call.message.chat.id,status)
         # Edit message markup with updated keyboard
