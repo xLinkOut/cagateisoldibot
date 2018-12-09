@@ -3,7 +3,7 @@ import telebot, logging, os
 import Settings, Statements, Keyboards, Utils
 
 # DEBUG
-#import sqlite3
+import sqlite3
 
 from time import strftime as current_date
 from datetime import datetime
@@ -26,27 +26,37 @@ telebot.logger.setLevel(logging.DEBUG)
 # Create bot obj with token in settings file
 bot = telebot.TeleBot(Settings.API_TOKEN)
 
+# TEST CODE AREA
+
+#Utils.getAllUsers('-277417609')
+
+#exit()
+# END TEST CODE AREA
+
 # Notify group when is time to pay!
 def paymentNotify(group_id):
     # (debug that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
     # DEBUG, delete...
-    #DB = sqlite3.connect(Settings.DatabaseFile)
-    #Cursor = DB.cursor()
-    #results = Cursor.execute("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)]).fetchall()
-    #DB.close()
-    #n_p = Utils.countNetflixers(group_id)
-    #status = []
-    #for i in range(0,n_p):
-    #    status.append(0)
-    #if results:
-    #    Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)])
-    #    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listNetflixers(group_id),status),parse_mode='markdown')
-    #else:
+    # '''
+    DB = sqlite3.connect(Settings.DatabaseFile)
+    Cursor = DB.cursor()
+    results = Cursor.execute("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)]).fetchall()
+    DB.close()
+    n_p = Utils.countNetflixers(group_id)
+    status = []
+    for i in range(0,n_p):
+        status.append(0)
+    if results:
+        Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,status),parse_mode='markdown')
+    else:
         ## until here.
+    # '''
     # tab
-    for user in Utils.listNetflixers(group_id):
-        Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?)",[Utils.getExpiration(group_id),group_id,user,0])
-    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(Utils.listNetflixers(group_id),[0,0,0,0]),parse_mode='markdown')
+        expiration = Utils.getExpiration(group_id)
+        for user in Utils.getAllUsers(group_id):
+            Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
 
 # APScheduler background object
 scheduler = BackgroundScheduler()
@@ -107,7 +117,8 @@ def addMember(call):
         # Update record in GROUPS table, increment number of user joined
         Utils.executeQuery("UPDATE GROUPS SET NETFLIXERS=NETFLIXERS+1 WHERE GROUP_ID=?",[call.message.chat.id])
         # Create an updated keyboard with new member
-        updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
+        updatedKeyboard = Keyboards.buildKeyboardForUser(call.message.chat.id)
+        #updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
         # Edit the keyboard markup of the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
         # Answer to the callback
@@ -116,8 +127,9 @@ def addMember(call):
 # Remove user that already tapped 'I Use Netflix' button
 @bot.callback_query_handler(func=lambda call: 'remove_' in call.data)
 def removeUser(call):
-    # If name of the user is different from name in the button
-    if call.from_user.first_name != call.data[7:]:
+    print(call.data)
+    # If id of the user is different from id the user in button
+    if int(call.from_user.id) != int(call.data[7:]):
         bot.answer_callback_query(call.id,Statements.IT.NotPermitted,show_alert=True,cache_time=10)
     else:
         # Delete user from db
@@ -125,7 +137,8 @@ def removeUser(call):
         # Decrement counter in GROUPS table
         Utils.executeQuery("UPDATE GROUPS SET NETFLIXERS=NETFLIXERS - 1 WHERE GROUP_ID=?",[call.message.chat.id])
         # Create an updated keyboard
-        updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
+        updatedKeyboard = Keyboards.buildKeyboardForUser(call.message.chat.id)
+        #updatedKeyboard = Keyboards.buildKeyboardForUser(Utils.listNetflixers(call.message.chat.id))
         # Edit keyboard markup in the same message
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=updatedKeyboard)
         # Answer to the callback
@@ -229,6 +242,7 @@ def confirmExpiration(call):
 # When user tap on his name in payment list
 @bot.callback_query_handler(func=lambda call: 'payed_' in call.data)
 def payed(call):
+    print(call.data)
     # Get current status of the user from db
     stato = Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.data[6:])
     # If the user has already payed
@@ -236,26 +250,26 @@ def payed(call):
             bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[6:]),show_alert=True)
     else:
         # If name is different and is not admin
-        if call.from_user.first_name != call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
-            bot.answer_callback_query(call.id,'Non puoi modificare le prefenze di altri',show_alert=True,cache_time=10)
+        if int(call.from_user.id) != int(call.data[6:]) and call.from_user.id != Utils.getAdminID(call.message.chat.id):
+            bot.answer_callback_query(call.id,Statements.IT.NotPermitted,show_alert=True,cache_time=10)
             return
         # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
-        elif call.from_user.first_name == call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
+        elif call.from_user.id == call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
                 # If user is waiting for confirmation
-                if Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.first_name) == -1:
+                if Utils.getSingleStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.id) == -1:
                     bot.answer_callback_query(call.id,Statements.IT.IsWaiting,show_alert=True,cache_time=10)
                     return
                 else:
                     # Otherwise set user's status to -1, wait for confirmation
-                    Utils.executeQuery("UPDATE PAYMENTS SET STATUS=-1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])        
+                    Utils.executeQuery("UPDATE PAYMENTS SET STATUS=-1 WHERE GROUP_ID=? AND CHAT_ID=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])        
                     bot.answer_callback_query(call.id,Statements.IT.WaitingFor,show_alert=True,cache_time=10)
         # If is admin
-        elif call.from_user.id == Utils.getAdminID(call.message.chat.id):
+        elif int(call.from_user.id) == Utils.getAdminID(call.message.chat.id):
             # Update payment status into db to payed
-            Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND FIRST_NAME=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])
-            username = "@{}".format(str(Utils.getUsername(call.message.chat.id,call.data[6:])))
+            Utils.executeQuery("UPDATE PAYMENTS SET STATUS=1 WHERE GROUP_ID=? AND CHAT_ID=? AND EXPIRATION=?",[call.message.chat.id,call.data[6:],Utils.getExpiration(call.message.chat.id)])
+            username = "@{}".format(str(Utils.getUser(call.message.chat.id,call.data[6:])[1]))
             if not username:
-                username = call.data[6:]
+                username = Utils.getUser(call.message.chat.id,call.data[6:])[2]
             bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
             # Get current status of all users
             results = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
@@ -270,7 +284,7 @@ def payed(call):
         # Get current status of all users
         status = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
         # Create an update keyboard with new status
-        kb = Keyboards.buildKeyboardForPayment(Utils.listNetflixers(call.message.chat.id),status)
+        kb = Keyboards.buildKeyboardForPayment(call.message.chat.id,status)
         # Edit message markup with updated keyboard
         bot.edit_message_reply_markup(chat_id=call.message.chat.id,message_id=call.message.message_id,reply_markup=kb)
 
@@ -288,11 +302,11 @@ def reset(call):
 def pay(message):
     paymentNotify(message.chat.id)
 
-@bot.message_handler(func=lambda message: message.text[2:] == 'Donate')
+@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Donate')
 def donate(message):
     bot.send_message(message.chat.id,Statements.IT.Donate,parse_mode='markdown',disable_web_page_preview=True)
 
-@bot.message_handler(func=lambda message: message.text[2:] == 'About')
+@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'About')
 def about(message):
     bot.send_message(message.chat.id,Statements.IT.About,parse_mode='markdown',disable_web_page_preview=True)
 
