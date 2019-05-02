@@ -159,7 +159,7 @@ def moneyEach(group_id):
 
 # Return next expiration date in string and explicit form
 def newExpiration(sourcedate,months=1):
-    # shttps://stackoverflow.com/questions/4130922/how-to-increment-datetime-by-custom-months-in-python-without-using-library
+    # https://stackoverflow.com/questions/4130922/how-to-increment-datetime-by-custom-months-in-python-without-using-library
     sourcedate = datetime.datetime.strptime(sourcedate,'%Y-%m-%d')
     month = sourcedate.month - 1 + months
     year = sourcedate.year + month // 12

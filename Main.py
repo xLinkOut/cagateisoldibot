@@ -17,7 +17,7 @@ if not (os.path.isfile(Settings.DatabaseFile)):
 
 # Check for token
 if Settings.API_TOKEN == '' or Settings.API_TOKEN == 'INSERT_TOKEN_HERE':
-    print('Token not valid!')
+    print('Token invalid!')
     exit(-1)
 
 # Create a logger, then set its level to DEBUG (alternatively, INFO)
