@@ -237,14 +237,14 @@ def payed(call):
     stato = Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.data[6:])
     # If the user has already payed
     if stato == 1:
-            bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',call.data[6:]),show_alert=True)
+        bot.answer_callback_query(call.id,Statements.IT.AlreadyPayed.replace('$$',Utils.getUser(call.message.chat.id,call.data[6:])[2]),show_alert=True)
     else:
         # If name is different and is not admin
         if int(call.from_user.id) != int(call.data[6:]) and call.from_user.id != Utils.getAdminID(call.message.chat.id):
             bot.answer_callback_query(call.id,Statements.IT.NotPermitted,show_alert=True,cache_time=10)
             return
         # If the user is not the admin, the payment's status is set to -1, mean 'waiting for admin confirm'
-        elif call.from_user.id == call.data[6:] and call.from_user.id != Utils.getAdminID(call.message.chat.id):
+        elif int(call.from_user.id) == int(call.data[6:]) and int(call.from_user.id) != Utils.getAdminID(call.message.chat.id):
                 # If user is waiting for confirmation
                 if Utils.getStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id),call.from_user.id) == -1:
                     bot.answer_callback_query(call.id,Statements.IT.IsWaiting,show_alert=True,cache_time=10)
@@ -292,6 +292,12 @@ def reset(call):
 @bot.message_handler(commands=['pay'])
 def pay(message):
     paymentNotify(message.chat.id)
+
+# DEBUG funtion that trigger sheduled jobs 
+@bot.message_handler(commands=['fire'])
+def fire(message):
+    for job in jobScheduledList:
+        job.func(message.chat.id)
 
 @bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Dona')
 def donate(message):
