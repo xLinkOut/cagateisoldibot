@@ -103,6 +103,6 @@ DateKeyboard.add(
 
 # -- Start Keyboard -- #
 StartPrivate = ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
-DonateBtn = KeyboardButton("🎁 Donate")
-AboutBtn = KeyboardButton("❓ About")
+DonateBtn = KeyboardButton("🎁 Dona")
+AboutBtn = KeyboardButton("❓ Info")
 StartPrivate.add(DonateBtn,AboutBtn)

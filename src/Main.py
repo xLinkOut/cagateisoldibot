@@ -293,11 +293,11 @@ def reset(call):
 def pay(message):
     paymentNotify(message.chat.id)
 
-@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Donate')
+@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Dona')
 def donate(message):
     bot.send_message(message.chat.id,Statements.IT.Donate,parse_mode='markdown',disable_web_page_preview=True)
 
-@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'About')
+@bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Info')
 def about(message):
     bot.send_message(message.chat.id,Statements.IT.About,parse_mode='markdown',disable_web_page_preview=True)
 
