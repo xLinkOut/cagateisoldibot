@@ -16,8 +16,9 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
 Obviously replace _YOUR\_TOKEN_ with bot's token given by BotFather.
 
 ## TODO
-- [x] Notify member when payment is confimed by admin // check
-- [ ] Notify admin if bot removed from a group
+- [x] Notify member when payment is confimed by admin;
+- [ ] Notify admin if bot removed from a group;
+- [ ] Write tests;
 
 ## Try it here!
 It's still in beta and can stop working/lose data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
