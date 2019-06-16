@@ -1,5 +1,8 @@
-.vscode/
+# Directories
 venv/
+.vscode/
 __pycache__/
+
+# Files
 *.db
 *.pyc
