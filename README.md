@@ -5,10 +5,10 @@ CagateiSoldi is a Telegram bot to manage Netflix's shared account with your frie
 + **Reminders:** Every month, on the day your Netflix subscription is renewed, the bot send a notification in your group with the list of people who have to give you money. They could mark themselves as payed, but you, the admin, have to confirm the payment.
 + **Free and Open source:** I really believe in an open source world.
 <center>
-<img src="assets/screenshot.jpg" width="300px">
-<video width="300" controls>
-  <source src="assets/overview.mp4" type="video/mp4">
-</video>
+<img src="assets/screenshot.jpg" width="250px">
+<img src="assets/screenshot-2.jpg" width="250px">
+<img src="assets/screenshot-3.jpg" width="250px">
+
 </center>
 
 ## [Installation:](https://asciinema.org/a/215057)
