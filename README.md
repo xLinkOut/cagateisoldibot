@@ -1,8 +1,17 @@
-# 💰 CagateISoldiBot 💰
-Telegram bot to manage Netflix's shared account with your friends and family. 🎬
-_(In english 'cagate i soldi' is something like 'give me your money')_
+# 💰 CagateiSoldiBot &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/xLinkOut/cagateisoldibot/master/LICENSE)
+CagateiSoldi is a Telegram bot to manage Netflix's shared account with your friends and family. In english _'cagate i soldi'_ is something like _'give me your money'_.
 
-## Installation:
++ **Easy:** Add the bot to your Netflix's Telegram group, let your friends join the bot's list, set the day the subscription is renewed and you're done.
++ **Reminders:** Every month, on the day your Netflix subscription is renewed, the bot send a notification in your group with the list of people who have to give you money. They could mark themselves as payed, but you, the admin, have to confirm the payment.
++ **Free and Open source:** I really believe in an open source world.
+<center>
+<img src="assets/screenshot.jpg" width="300px">
+<video width="300" controls>
+  <source src="assets/overview.mp4" type="video/mp4">
+</video>
+</center>
+
+## [Installation:](https://asciinema.org/a/215057)
 ```bash
     $ virtualenv -p python3 venv # optional
     $ source venv/bin/activate # optional
@@ -12,9 +21,8 @@ _(In english 'cagate i soldi' is something like 'give me your money')_
     $ python3 CreateDB.py
     $ python3 Main.py
 ```
-[![asciicast](https://asciinema.org/a/215057.svg)](https://asciinema.org/a/215057)
 
-## TODO
+## Todo
 - [x] Notify a member when his payment is confimed by the admin;
 - [ ] Notify the admin if the bot is removed from a group;
 - [ ] Send a bunch of other messages if someone's money is missing;
