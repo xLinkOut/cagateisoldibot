@@ -24,7 +24,7 @@ Configuration | Reminder
 - [x] Notify a member when his payment is confimed by the admin;
 - [ ] Notify the admin if the bot is removed from a group;
 - [ ] Send a bunch of other messages if someone's money is missing;
-- [ ] Add screenshots to this readme;
+- [x] Add screenshots to this readme;
 
 ## Try it here!
 It's still in beta and can stop working/losing data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
