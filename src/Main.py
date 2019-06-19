@@ -12,12 +12,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 # Check for database file
 if not (os.path.isfile(Settings.DATABASE)):
-    print('Database not found!')
+    print("Database not found!")
     exit(-1)
 
 # Check for token
-if Settings.API_TOKEN == '' or Settings.API_TOKEN == 'INSERT_TOKEN_HERE':
-    print('Token invalid!')
+if Settings.API_TOKEN == '' or Settings.API_TOKEN == "INSERT_TOKEN_HERE":
+    print("Token invalid!")
     exit(-1)
 
 # Create a logger, then set its level to DEBUG (alternatively, INFO)
@@ -28,11 +28,11 @@ bot = telebot.TeleBot(Settings.API_TOKEN)
 
 # Notify group when is time to pay!
 def paymentNotify(group_id):
-    if Settings.DEBUG: return Utils.__resetPayments(group_id)
+    if Settings.DEBUG: return Utils.__resetPayments(group_id,bot)
     expiration = Utils.getExpiration(group_id)
     for user in Utils.getAllUsers(group_id):
-        Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
-    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
+        Utils.newPayment(expiration,group_id,user)
+    bot.send_message(group_id,Statements.IT.TimeToPay.replace("$$",Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
 
 # APScheduler background object
 scheduler = BackgroundScheduler()
@@ -46,7 +46,7 @@ for trigger in results:
 scheduler.start()
 
 # Bot added in a group (also during group's creation)
-@bot.message_handler(content_types=['group_chat_created','new_chat_members'])
+@bot.message_handler(content_types=["group_chat_created","new_chat_members"])
 def added_in_a_group(message):
     # Send start message, with start keyboard and save the message id into database
     msg_id = bot.send_message(message.chat.id,Statements.IT.Start.replace('$$',message.from_user.first_name),reply_markup=Keyboards.Start,parse_mode='markdown').message_id

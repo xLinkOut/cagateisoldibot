@@ -169,19 +169,30 @@ def newExpiration(sourcedate,months=1):
     return "{} {} {}".format(day,months[month-1],year)
     #return datetime.datetime.strftime(datetime.date(year,month,day),'%Y-%m-%d')
 
-def __resetPayments(group_id):
-    # Debug function that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
-    results = executeQuery("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)]).fetchall()
-    DB.close()
-    n_p = Utils.countNetflixers(group_id)
+def newPayment(expiration,group_id,user):
+    try:
+        executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
+    except sqlite3.IntegrityError as e:
+        print(e)
+
+
+# Debug function that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
+def __resetPayments(group_id,bot):
+    import Keyboards
+    import Statements
+    results = executeQuery("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,getExpiration(group_id)])    
+    n_p = countNetflixers(group_id)
     status = []
     for i in range(0,n_p):
         status.append(0)
     if results:
-        Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)])
-        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,status),parse_mode='markdown')
+        executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,getExpiration(group_id)])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,status),parse_mode='markdown')
     else:
-        expiration = Utils.getExpiration(group_id)
-        for user in Utils.getAllUsers(group_id):
-            Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
-        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
+        expiration = getExpiration(group_id)
+        for user in getAllUsers(group_id):
+            try:
+                executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
+            except sqlite3.IntegrityError:
+                pass
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
