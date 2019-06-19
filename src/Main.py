@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
-import telebot, logging, os
-import Settings, Statements, Keyboards, Utils
+import os
+import Utils
+import telebot
+import logging
+import Settings
+import Keyboards
+import Statements
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # Check for database file
 if not (os.path.isfile(Settings.DATABASE)):
