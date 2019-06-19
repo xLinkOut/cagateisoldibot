@@ -22,6 +22,8 @@ Configuration | Reminder
 
 ## Todo
 - [x] Notify a member when his payment is confimed by the admin;
+- [ ] Store email/password and send with a command;
+- [ ] Set a command to list old/current payments list(s);
 - [ ] Notify the admin if the bot is removed from a group;
 - [ ] Send a bunch of other messages if someone's money is missing;
 - [x] Add screenshots to this readme;
