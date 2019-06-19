@@ -132,7 +132,15 @@ def getTriggers():
     results = Cursor.execute("SELECT * FROM TRIGGER").fetchall()
     DB.close()
     return results
-
+    '''
+    if results:
+        triggers = []
+        for trigger in results:
+            triggers.append(trigger)
+        return triggers
+    else:
+        return None
+    '''
 # Return the trigger ID for a specified group
 def getTriggerID(group_id):
     DB = sqlite3.connect(Settings.DATABASE)

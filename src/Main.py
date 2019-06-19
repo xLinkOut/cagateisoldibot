@@ -7,6 +7,7 @@ import Settings
 import Keyboards
 import Statements
 
+from datetime import datetime
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -279,8 +280,8 @@ def pay(message):
 # DEBUG funtion that trigger sheduled jobs 
 @bot.message_handler(commands=['fire'])
 def fire(message):
-    for job in jobScheduledList:
-        job.func(message.chat.id)
+    for job in scheduler.get_jobs():
+        job.modify(next_run_time=datetime.now())
 
 @bot.message_handler(func=lambda message: message.text and message.text[2:] == 'Dona')
 def donate(message):
