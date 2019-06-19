@@ -2,16 +2,11 @@
 import telebot, logging, os
 import Settings, Statements, Keyboards, Utils
 
-# DEBUG
-import sqlite3
-
-from time import strftime as current_date
-from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 # Check for database file
-if not (os.path.isfile(Settings.DatabaseFile)):
+if not (os.path.isfile(Settings.DATABASE)):
     print('Database not found!')
     exit(-1)
 
@@ -28,28 +23,11 @@ bot = telebot.TeleBot(Settings.API_TOKEN)
 
 # Notify group when is time to pay!
 def paymentNotify(group_id):
-    # (debug that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
-    # DEBUG, delete...
-    # '''
-    DB = sqlite3.connect(Settings.DatabaseFile)
-    Cursor = DB.cursor()
-    results = Cursor.execute("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)]).fetchall()
-    DB.close()
-    n_p = Utils.countNetflixers(group_id)
-    status = []
-    for i in range(0,n_p):
-        status.append(0)
-    if results:
-        Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)])
-        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,status),parse_mode='markdown')
-    else:
-        ## until here.
-    # '''
-    # tab
-        expiration = Utils.getExpiration(group_id)
-        for user in Utils.getAllUsers(group_id):
-            Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
-        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
+    if Settings.DEBUG: return Utils.__resetPayments(group_id)
+    expiration = Utils.getExpiration(group_id)
+    for user in Utils.getAllUsers(group_id):
+        Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
+    bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')
 
 # APScheduler background object
 scheduler = BackgroundScheduler()

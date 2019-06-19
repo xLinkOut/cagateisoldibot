@@ -3,7 +3,7 @@ import sqlite3, datetime, calendar, Settings
 
 # Execute a generic SQL query
 def executeQuery(query, args):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     Cursor.execute(query,args)
     DB.commit()
@@ -11,7 +11,7 @@ def executeQuery(query, args):
 
 # Get START_MSG_ID from GROUPS table
 def getMessageID(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT START_MSG_ID FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
@@ -22,7 +22,7 @@ def getMessageID(group_id):
 
 # Get Admin Telegram ID from GROUPS table
 def getAdminID(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT ADMIN_ID FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
@@ -33,7 +33,7 @@ def getAdminID(group_id):
 
 # Get user data from DB by groupID and chatID
 def getUser(group_id,chat_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     result = Cursor.execute("SELECT CHAT_ID,USERNAME,FIRST_NAME FROM USERS WHERE GROUP_ID=? AND CHAT_ID=?",[group_id,chat_id]).fetchone()
     DB.close()
@@ -48,7 +48,7 @@ def getUser(group_id,chat_id):
 
 # Get all user that joined a group from DB by groupID
 def getAllUsers(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT CHAT_ID,USERNAME,FIRST_NAME FROM USERS WHERE GROUP_ID=?",[group_id]).fetchall()
     DB.close()
@@ -59,7 +59,7 @@ def getAllUsers(group_id):
 
 # Return a list with name of users in a group
 def listNetflixers(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()    
     results = Cursor.execute("SELECT FIRST_NAME FROM USERS WHERE GROUP_ID=? ORDER BY FIRST_NAME",[group_id]).fetchall()
     DB.close()
@@ -73,7 +73,7 @@ def listNetflixers(group_id):
 
 # Return (as int) the number of users that joined a group
 def countNetflixers(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()    
     results = int(Cursor.execute("SELECT NETFLIXERS FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()[0])
     DB.close()
@@ -81,7 +81,7 @@ def countNetflixers(group_id):
 
 # Return true if a group is already registered into db, false otherwise
 def groupAlreadyExists(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT * FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
@@ -92,7 +92,7 @@ def groupAlreadyExists(group_id):
 
 # Return the payment's status of a specific user on a specific date
 def getStatus(group_id,expiration,chat_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE EXPIRATION=? AND GROUP_ID=? AND CHAT_ID=?",[expiration,group_id,chat_id]).fetchone()
     DB.close()
@@ -100,7 +100,7 @@ def getStatus(group_id,expiration,chat_id):
 
 # Return a list with all the payments status for each user on a specific date
 def getAllStatus(group_id,expiration):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT STATUS FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,expiration]).fetchall()
     DB.close()
@@ -111,7 +111,7 @@ def getAllStatus(group_id,expiration):
 
 # Return the expiration date of a specified group in the format YYYY-MM-DD
 def getExpiration(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT EXPIRATION FROM GROUPS WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
@@ -119,7 +119,7 @@ def getExpiration(group_id):
 
 # Save the trigger into db
 def saveTrigger(trigger_id,group_id,data):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     Cursor.execute("INSERT INTO TRIGGER VALUES(?,?,?)",[trigger_id,group_id,data])
     DB.commit()
@@ -127,7 +127,7 @@ def saveTrigger(trigger_id,group_id,data):
 
 # Return a list with all the triggers saved into db
 def getTriggers():
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT * FROM TRIGGER").fetchall()
     DB.close()
@@ -135,7 +135,7 @@ def getTriggers():
 
 # Return the trigger ID for a specified group
 def getTriggerID(group_id):
-    DB = sqlite3.connect(Settings.DatabaseFile)
+    DB = sqlite3.connect(Settings.DATABASE)
     Cursor = DB.cursor()
     results = Cursor.execute("SELECT TRIGGER_ID FROM TRIGGER WHERE GROUP_ID=?",[group_id]).fetchone()
     DB.close()
@@ -168,3 +168,20 @@ def newExpiration(sourcedate,months=1):
     months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]
     return "{} {} {}".format(day,months[month-1],year)
     #return datetime.datetime.strftime(datetime.date(year,month,day),'%Y-%m-%d')
+
+def __resetPayments(group_id):
+    # Debug function that reset payment status when admin send 'pay' msg, here just to fire trigger job with a message)
+    results = executeQuery("SELECT * FROM PAYMENTS WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)]).fetchall()
+    DB.close()
+    n_p = Utils.countNetflixers(group_id)
+    status = []
+    for i in range(0,n_p):
+        status.append(0)
+    if results:
+        Utils.executeQuery("UPDATE PAYMENTS SET STATUS=0 WHERE GROUP_ID=? AND EXPIRATION=?",[group_id,Utils.getExpiration(group_id)])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,status),parse_mode='markdown')
+    else:
+        expiration = Utils.getExpiration(group_id)
+        for user in Utils.getAllUsers(group_id):
+            Utils.executeQuery("INSERT INTO PAYMENTS VALUES(?,?,?,?,?)",[expiration,group_id,user[0],user[2],0])
+        bot.send_message(group_id,Statements.IT.TimeToPay.replace('$$',Utils.moneyEach(group_id)),reply_markup=Keyboards.buildKeyboardForPayment(group_id,[0,0,0,0]),parse_mode='markdown')

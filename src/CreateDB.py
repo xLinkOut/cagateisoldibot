@@ -2,11 +2,11 @@
 import sqlite3, os, Settings
 
 # Delete old db and create new one
-if(os.path.isfile(Settings.DatabaseFile)):
-    os.remove(Settings.DatabaseFile)
+if(os.path.isfile(Settings.DATABASE)):
+    os.remove(Settings.DATABASE)
 
 # Create a connection to the db file (filaname saved into Settings.py)
-DB = sqlite3.connect(Settings.DatabaseFile)
+DB = sqlite3.connect(Settings.DATABASE)
 # Create a cursor to interact with db
 Cursor = DB.cursor()
 
