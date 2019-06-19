@@ -7,7 +7,7 @@ CagateiSoldi is a Telegram bot to manage Netflix's shared account with your frie
 
 Configuration | Reminder
 :------------:|:--------:
-![image](assets/screenshot-2.jpg) | ![image](assets/screenshot-3.jpg)
+![image](assets/screenshot-2.jpg) | ![image](assets/screenshot-4.jpg)
 
 ## [Installation:](https://asciinema.org/a/215057)
 ```bash
@@ -22,11 +22,11 @@ Configuration | Reminder
 
 ## Todo
 - [x] Notify a member when his payment is confimed by the admin;
+- [x] Add screenshots to this readme;
 - [ ] Store email/password and send with a command;
 - [ ] Set a command to list old/current payments list(s);
 - [ ] Notify the admin if the bot is removed from a group;
 - [ ] Send a bunch of other messages if someone's money is missing;
-- [x] Add screenshots to this readme;
 
 ## Try it here!
 It's still in beta and can stop working/losing data without warning, but you can give a try: [http://t.me/cagateisoldibot](http://t.me/cagateisoldibot) 
