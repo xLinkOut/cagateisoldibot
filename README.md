@@ -1,4 +1,4 @@
-# 💰 CagateiSoldiBot &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/xLinkOut/cagateisoldibot/master/LICENSE)
+# 💰 CagateiSoldiBot &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/xLinkOut/cagateisoldibot/blob/master/LICENSE)
 CagateiSoldi is a Telegram bot to manage Netflix's shared account with your friends and family. In english _'cagate i soldi'_ is something like _'give me your money'_.
 
 + **Easy:** Add the bot to your Netflix's Telegram group, let your friends join the bot's list, set the day the subscription is renewed and you're done.
