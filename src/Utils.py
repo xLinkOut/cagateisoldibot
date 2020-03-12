@@ -157,13 +157,13 @@ def getTriggerID(group_id):
 def moneyEach(group_id):
     n = countNetflixers(group_id)
     if n == 4:
-        return "3.50"
+        return "4.00"
     elif n == 3:
-        return "4.50"
+        return "5.35"
     elif n == 2:
-        return "6"
-    else:
         return "8"
+    else:
+        return "16"
 
 # Return next expiration date in string and explicit form
 def newExpiration(sourcedate,months=1):
