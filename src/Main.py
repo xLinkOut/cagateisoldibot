@@ -245,7 +245,7 @@ def payed(call):
                 username = "@{}".format(str(Utils.getUser(call.message.chat.id,call.data[6:])[1]))
                 if not username:
                     username = Utils.getUser(call.message.chat.id,call.data[6:])[2]
-                bot.send_message(call.message.chat.id,Statements.IT.PaymentAccepted.replace('$$',username),parse_mode='markdown')
+                bot.answer_callback_query(call.id,Statements.IT.PaymentAccepted.replace('$$',username),show_alert=True,cache_time=10)
             # Get current status of all users
             results = Utils.getAllStatus(call.message.chat.id,Utils.getExpiration(call.message.chat.id))
             everyonePayed = True
